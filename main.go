@@ -15,7 +15,9 @@ func main() {
 	}
 	log.Println(b)
 
-	b.PlusMoney(190)
-
+	err = handlers.AddMoneyHandler(b.Id, float32(23190))
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Println(b)
 }

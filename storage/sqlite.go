@@ -2,7 +2,9 @@ package storage
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"pocket-bomj/src"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -22,8 +24,8 @@ func NewStorage(StoragePath string) (*Storage, error) {
 	stmt, err := db.Prepare(`
 		CREATE TABLE IF NOT EXISTS bomjs (
 			id INTEGER PRIMARY KEY,
-			health INTEGER,
-			money REAL
+			health INTEGER NOT NULL DEFAULT 100,
+			money REAL NOT NULL DEFAULT 0.00
 		);
 	`)
 	if err != nil {
@@ -55,19 +57,42 @@ func (s *Storage) CreateBomj(health uint8) (int64, error) {
 	return res.LastInsertId()
 }
 
-func (s *Storage) UpdateBomj(health uint8, money float32) error {
+func (s *Storage) UpdateBomj(id int64, health uint8, money float32) error {
 	const op = "storage.sqlite.UpdateBomj"
 
-	stmt, err := s.db.Prepare("UPDATE bomjs SET (health, money) VALUES (?, ?);")
+	stmt, err := s.db.Prepare("UPDATE bomjs SET (health, money) = (?, ?) WHERE id = ?;")
 
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = stmt.Exec(health, money)
+	_, err = stmt.Exec(health, money, id)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (s *Storage) GetBomj(id int64) (error, *src.Bomj) {
+	const op = "storage.sqlite.GetBomj"
+
+	stmt, err := s.db.Prepare("SELECT * FROM bomjs WHERE id = ?;")
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err), nil
+	}
+
+	b := src.Bomj{}
+	row := stmt.QueryRow(id).Scan(&b.Id, &b.Money, &b.Health)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return errors.New(op + fmt.Sprintf(" Bomj with id `%v` not found", id)), nil
+	}
+
+	fmt.Println(row)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err), nil
+	}
+
+	return nil, &b
 }

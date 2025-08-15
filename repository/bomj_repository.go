@@ -24,7 +24,11 @@ func (br *BomjRepository) Create(b *src.Bomj) error {
 }
 
 func (br *BomjRepository) Update(b src.BomjInterface) error {
-	return br.Update(b)
+	return br.storage.UpdateBomj(b.GetId(), b.GetHealth(), b.GetMoney())
+}
+
+func (br *BomjRepository) Get(id int64) (error, *src.Bomj) {
+	return br.storage.GetBomj(id)
 }
 
 var (

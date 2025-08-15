@@ -7,11 +7,17 @@ type Bomj struct {
 }
 
 type BomjInterface interface {
+	GetId() int64
 	SetHealth(uint8)
 	GetHealth() uint8
 	SetId(int64)
-	SetMoney(float32)
+	PlusMoney(float32)
+	MinusMoney(float32)
 	GetMoney() float32
+}
+
+func (b *Bomj) GetId() int64 {
+	return b.Id
 }
 
 func (b *Bomj) SetHealth(health uint8) {
@@ -32,4 +38,8 @@ func (b *Bomj) PlusMoney(money float32) {
 
 func (b *Bomj) MinusMoney(money float32) {
 	b.Money -= money
+}
+
+func (b *Bomj) GetMoney() float32 {
+	return b.Money
 }
