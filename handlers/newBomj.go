@@ -6,7 +6,9 @@ import (
 )
 
 func NewBomj() (*src.Bomj, error) {
-	bomj := src.Bomj{Health: 100}
+	bomj := src.Bomj{}
+	bomj.SetHealth(100)
+	bomj.PlusMoney(100)
 
 	if err := repository.NewBomjRepository().Create(&bomj); err != nil {
 		return nil, err

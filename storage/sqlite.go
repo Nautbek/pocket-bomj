@@ -74,7 +74,7 @@ func (s *Storage) UpdateBomj(id int64, health uint8, money float32) error {
 	return nil
 }
 
-func (s *Storage) GetBomj(id int64) (error, *src.Bomj) {
+func (s *Storage) GetBomj(bId int64) (error, *src.Bomj) {
 	const op = "storage.sqlite.GetBomj"
 
 	stmt, err := s.db.Prepare("SELECT * FROM bomjs WHERE id = ?;")
@@ -82,8 +82,18 @@ func (s *Storage) GetBomj(id int64) (error, *src.Bomj) {
 		return fmt.Errorf("%s: %w", op, err), nil
 	}
 
+	var (
+		id     int64
+		money  float32
+		health uint8
+	)
+
 	b := src.Bomj{}
-	row := stmt.QueryRow(id).Scan(&b.Id, &b.Money, &b.Health)
+	row := stmt.QueryRow(bId).Scan(&id, &health, &money)
+
+	b.SetId(id)
+	b.SetHealth(health)
+	b.SetMoney(money)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return errors.New(op + fmt.Sprintf(" Bomj with id `%v` not found", id)), nil

@@ -15,9 +15,16 @@ func main() {
 	}
 	log.Println(b)
 
-	err = handlers.AddMoneyHandler(b.Id, float32(23190))
+	err = handlers.AddMoneyHandler(b.GetId(), float32(23190))
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println(b)
+
+	err, bomj := handlers.GetBomj(b.GetId())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(bomj)
 }
