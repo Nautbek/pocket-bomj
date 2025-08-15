@@ -23,7 +23,7 @@ func NewStorage(StoragePath string) (*Storage, error) {
 		CREATE TABLE IF NOT EXISTS bomjs (
 			id INTEGER PRIMARY KEY,
 			health INTEGER,
-			money 
+			money REAL
 		);
 	`)
 	if err != nil {
