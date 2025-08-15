@@ -2,23 +2,34 @@ package src
 
 type Bomj struct {
 	Id     int64
-	Health uint8 //percent 0-100
+	Health uint8   //percent 0-100
+	Money  float32 //Rubles
 }
 
 type BomjInterface interface {
 	SetHealth(uint8)
 	GetHealth() uint8
 	SetId(int64)
+	SetMoney(float32)
+	GetMoney() float32
 }
 
-func (br *Bomj) SetHealth(health uint8) {
-	br.Health = health
+func (b *Bomj) SetHealth(health uint8) {
+	b.Health = health
 }
 
-func (br *Bomj) GetHealth() uint8 {
-	return br.Health
+func (b *Bomj) GetHealth() uint8 {
+	return b.Health
 }
 
-func (br *Bomj) SetId(id int64) {
-	br.Id = id
+func (b *Bomj) SetId(id int64) {
+	b.Id = id
+}
+
+func (b *Bomj) PlusMoney(money float32) {
+	b.Money += money
+}
+
+func (b *Bomj) MinusMoney(money float32) {
+	b.Money -= money
 }

@@ -11,8 +11,8 @@ type Storage struct {
 	db *sql.DB
 }
 
-func New(StoragePath string) (*Storage, error) {
-	const op = "storage.sqlite.New"
+func NewStorage(StoragePath string) (*Storage, error) {
+	const op = "storage.sqlite.NewStorage"
 
 	db, err := sql.Open("sqlite3", StoragePath)
 	if err != nil {
@@ -22,7 +22,8 @@ func New(StoragePath string) (*Storage, error) {
 	stmt, err := db.Prepare(`
 		CREATE TABLE IF NOT EXISTS bomjs (
 			id INTEGER PRIMARY KEY,
-			health INTEGER
+			health INTEGER,
+			money 
 		);
 	`)
 	if err != nil {
@@ -52,4 +53,21 @@ func (s *Storage) CreateBomj(health uint8) (int64, error) {
 	}
 
 	return res.LastInsertId()
+}
+
+func (s *Storage) UpdateBomj(health uint8, money float32) error {
+	const op = "storage.sqlite.UpdateBomj"
+
+	stmt, err := s.db.Prepare("UPDATE bomjs SET (health, money) VALUES (?, ?);")
+
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	_, err = stmt.Exec(health, money)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -13,7 +13,7 @@ type BomjRepository struct {
 	storage  storage.Storage
 }
 
-func (br *BomjRepository) Create(b src.BomjInterface) error {
+func (br *BomjRepository) Create(b *src.Bomj) error {
 	id, err := br.storage.CreateBomj(b.GetHealth())
 	if err != nil {
 		return err
@@ -21,6 +21,10 @@ func (br *BomjRepository) Create(b src.BomjInterface) error {
 
 	b.SetId(id)
 	return nil
+}
+
+func (br *BomjRepository) Update(b src.BomjInterface) error {
+	return br.Update(b)
 }
 
 var (
@@ -31,7 +35,7 @@ var (
 func NewBomjRepository() *BomjRepository {
 	once.Do(func() {
 		instance = &BomjRepository{}
-		storage1, err := storage.New("storage/storage.db")
+		storage1, err := storage.NewStorage("storage/storage.db")
 		if err != nil {
 			log.Fatal(err)
 		}

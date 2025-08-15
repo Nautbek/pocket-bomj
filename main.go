@@ -14,4 +14,8 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println(b)
+
+	b.PlusMoney(190)
+
+	log.Println(b)
 }
