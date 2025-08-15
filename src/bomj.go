@@ -1,9 +1,9 @@
 package src
 
 type Bomj struct {
-	id     int64
-	health uint8   //percent 0-100
-	money  float32 //Rubles
+	Id     int64
+	Health uint8   //percent 0-100
+	Money  float32 //Rubles
 }
 
 type BomjInterface interface {
@@ -18,33 +18,33 @@ type BomjInterface interface {
 }
 
 func (b *Bomj) GetId() int64 {
-	return b.id
+	return b.Id
 }
 
 func (b *Bomj) SetHealth(health uint8) {
-	b.health = health
+	b.Health = health
 }
 
 func (b *Bomj) GetHealth() uint8 {
-	return b.health
+	return b.Health
 }
 
 func (b *Bomj) SetId(id int64) {
-	b.id = id
+	b.Id = id
 }
 
 func (b *Bomj) PlusMoney(money float32) {
-	b.money += money
+	b.Money += money
 }
 
 func (b *Bomj) MinusMoney(money float32) {
-	b.money -= money
+	b.Money -= money
 }
 
 func (b *Bomj) GetMoney() float32 {
-	return b.money
+	return b.Money
 }
 
 func (b *Bomj) SetMoney(money float32) {
-	b.money = money
+	b.Money = money
 }

@@ -1,22 +1,32 @@
 package storage
 
 import (
+	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"pocket-bomj/src"
 
 	_ "github.com/mattn/go-sqlite3"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 type Storage struct {
-	db *sql.DB
+	db        *sql.DB
+	dbGorm    *gorm.DB
+	gormCntxt context.Context
 }
 
 func NewStorage(StoragePath string) (*Storage, error) {
 	const op = "storage.sqlite.NewStorage"
 
 	db, err := sql.Open("sqlite3", StoragePath)
+
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	dbGorm, err := gorm.Open(sqlite.Open(StoragePath), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -28,6 +38,7 @@ func NewStorage(StoragePath string) (*Storage, error) {
 			money REAL NOT NULL DEFAULT 0.00
 		);
 	`)
+
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -37,7 +48,11 @@ func NewStorage(StoragePath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return &Storage{db: db}, nil
+	return &Storage{
+		db:        db,
+		dbGorm:    dbGorm,
+		gormCntxt: context.Background(),
+	}, nil
 }
 
 func (s *Storage) CreateBomj(health uint8) (int64, error) {
@@ -77,32 +92,10 @@ func (s *Storage) UpdateBomj(id int64, health uint8, money float32) error {
 func (s *Storage) GetBomj(bId int64) (error, *src.Bomj) {
 	const op = "storage.sqlite.GetBomj"
 
-	stmt, err := s.db.Prepare("SELECT * FROM bomjs WHERE id = ?;")
+	first, err := gorm.G[src.Bomj](s.dbGorm).Where("id = ?", 1).First(s.gormCntxt)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err), nil
+		return err, nil
 	}
 
-	var (
-		id     int64
-		money  float32
-		health uint8
-	)
-
-	b := src.Bomj{}
-	row := stmt.QueryRow(bId).Scan(&id, &health, &money)
-
-	b.SetId(id)
-	b.SetHealth(health)
-	b.SetMoney(money)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return errors.New(op + fmt.Sprintf(" Bomj with id `%v` not found", id)), nil
-	}
-
-	fmt.Println(row)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err), nil
-	}
-
-	return nil, &b
+	return nil, &first
 }
