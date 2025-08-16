@@ -21,7 +21,7 @@ func main() {
 	}
 	log.Println(b)
 
-	err, bomj := handlers.GetBomj(b.GetId())
+	bomj, err := handlers.GetBomj(b.GetId())
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -12,7 +12,7 @@ func AddMoneyHandler(bId int64, money float32) error {
 
 	bomjRepository := repository.NewBomjRepository()
 
-	err, b := bomjRepository.Get(bId)
+	b, err := bomjRepository.Get(bId)
 
 	if err != nil {
 		return err
