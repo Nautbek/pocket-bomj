@@ -10,7 +10,7 @@ func NewBomj() (*src.Bomj, error) {
 	bomj.SetHealth(100)
 	bomj.PlusMoney(100)
 
-	if err := repository.NewBomjRepository().Create(&bomj); err != nil {
+	if err := repository.OBomjRepository().Create(&bomj); err != nil {
 		return nil, err
 	}
 

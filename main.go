@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	repository.NewBomjRepository()
+	repository.OBomjRepository()
 
 	b, err := handlers.NewBomj()
 	if err != nil {

@@ -6,5 +6,5 @@ import (
 )
 
 func GetBomj(id int64) (*src.Bomj, error) {
-	return repository.NewBomjRepository().Get(id)
+	return repository.OBomjRepository().Get(id)
 }

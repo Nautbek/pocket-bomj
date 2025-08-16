@@ -10,7 +10,7 @@ func AddMoneyHandler(bId int64, money float32) error {
 		return errors.New("money must be greater than zero")
 	}
 
-	bomjRepository := repository.NewBomjRepository()
+	bomjRepository := repository.OBomjRepository()
 
 	b, err := bomjRepository.Get(bId)
 

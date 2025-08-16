@@ -8,6 +8,12 @@ import (
 	"sync"
 )
 
+type IBomjRepository interface {
+	Create(b *src.Bomj) error
+	Update(b *src.Bomj) error
+	Get(id int64) (*src.Bomj, error)
+}
+
 type BomjRepository struct {
 	instance *src.Bomj
 	once     sync.Once
@@ -35,7 +41,7 @@ var (
 	once     sync.Once
 )
 
-func NewBomjRepository() *BomjRepository {
+var OBomjRepository = func() IBomjRepository {
 	once.Do(func() {
 		instance = &BomjRepository{}
 		storage1, err := storage.NewStorage("storage/storage.db")
