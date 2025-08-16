@@ -22,12 +22,12 @@ func (br *BomjRepository) Update(b *src.Bomj) error {
 	return br.storage.UpdateBomj(b)
 }
 
-func (br *BomjRepository) Get(id int64) (error, *src.Bomj) {
+func (br *BomjRepository) Get(id int64) (*src.Bomj, error) {
 	bomj := br.storage.GetBomj(id)
 	if bomj == nil {
-		return errors.New("bomj not found"), nil
+		return nil, errors.New("bomj not found")
 	}
-	return nil, br.storage.GetBomj(id)
+	return br.storage.GetBomj(id), nil
 }
 
 var (
