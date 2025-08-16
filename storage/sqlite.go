@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"pocket-bomj/src"
 
-	_ "github.com/mattn/go-sqlite3"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
