@@ -27,4 +27,6 @@ func main() {
 	}
 
 	log.Println(bomj)
+
+	log.Println(handlers.GetBomj(123))
 }

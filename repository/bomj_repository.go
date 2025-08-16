@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"log"
 	"pocket-bomj/src"
 	"pocket-bomj/storage"
@@ -14,21 +15,19 @@ type BomjRepository struct {
 }
 
 func (br *BomjRepository) Create(b *src.Bomj) error {
-	id, err := br.storage.CreateBomj(b.GetHealth())
-	if err != nil {
-		return err
-	}
-
-	b.SetId(id)
-	return nil
+	return br.storage.CreateBomj(b)
 }
 
-func (br *BomjRepository) Update(b src.BomjInterface) error {
-	return br.storage.UpdateBomj(b.GetId(), b.GetHealth(), b.GetMoney())
+func (br *BomjRepository) Update(b *src.Bomj) error {
+	return br.storage.UpdateBomj(b)
 }
 
 func (br *BomjRepository) Get(id int64) (error, *src.Bomj) {
-	return br.storage.GetBomj(id)
+	bomj := br.storage.GetBomj(id)
+	if bomj == nil {
+		return errors.New("bomj not found"), nil
+	}
+	return nil, br.storage.GetBomj(id)
 }
 
 var (

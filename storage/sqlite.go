@@ -9,6 +9,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Storage struct {
@@ -26,7 +27,9 @@ func NewStorage(StoragePath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	dbGorm, err := gorm.Open(sqlite.Open(StoragePath), &gorm.Config{})
+	dbGorm, err := gorm.Open(sqlite.Open(StoragePath), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -55,47 +58,17 @@ func NewStorage(StoragePath string) (*Storage, error) {
 	}, nil
 }
 
-func (s *Storage) CreateBomj(health uint8) (int64, error) {
-	const op = "storage.sqlite.CreateBomj"
-
-	stmt, err := s.db.Prepare("INSERT INTO bomjs (health) VALUES (?);")
-
-	if err != nil {
-		return 0, fmt.Errorf("%s: %w", op, err)
-	}
-
-	res, err := stmt.Exec(health)
-	if err != nil {
-		return 0, err
-	}
-
-	return res.LastInsertId()
+func (s *Storage) CreateBomj(b *src.Bomj) error {
+	return s.dbGorm.Create(b).Error
 }
 
-func (s *Storage) UpdateBomj(id int64, health uint8, money float32) error {
-	const op = "storage.sqlite.UpdateBomj"
-
-	stmt, err := s.db.Prepare("UPDATE bomjs SET (health, money) = (?, ?) WHERE id = ?;")
-
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
-
-	_, err = stmt.Exec(health, money, id)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (s *Storage) UpdateBomj(b *src.Bomj) error {
+	return s.dbGorm.Updates(b).Error
 }
 
-func (s *Storage) GetBomj(bId int64) (error, *src.Bomj) {
-	const op = "storage.sqlite.GetBomj"
+func (s *Storage) GetBomj(bId int64) *src.Bomj {
+	var bomj *src.Bomj
+	s.dbGorm.First(&bomj, bId)
 
-	first, err := gorm.G[src.Bomj](s.dbGorm).Where("id = ?", 1).First(s.gormCntxt)
-	if err != nil {
-		return err, nil
-	}
-
-	return nil, &first
+	return bomj
 }
